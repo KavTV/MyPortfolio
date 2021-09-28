@@ -2,7 +2,7 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Vector3 } from 'three';
-// import { InstancedFlow } from './jsm/modifiers/CurveModifier.js';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 
 class ThirdPersonCamera {
@@ -94,6 +94,8 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 
 var thirdPersonCamera = new ThirdPersonCamera();
 
+const modelLoader = new GLTFLoader();
+
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
@@ -105,6 +107,7 @@ camera.position.setY(20);
 
 
 renderer.render(scene, camera);
+
 
 
 
@@ -120,6 +123,12 @@ GroundPlane.rotation.x = Math.PI * -.5;
 let carGeometry = new THREE.BoxGeometry(2, 2);
 let carMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 })
 let carMesh = new THREE.Mesh(carGeometry, carMaterial);
+
+// modelLoader.load('car.glb', function(gltf){
+//   carMesh = gltf.scene;
+//   scene.add(gltf.scene);
+// })
+
 
 const car = new Car(carMesh); 
 
@@ -198,7 +207,7 @@ function animate() {
   renderer.render(scene, camera);
 
   //Make the camera follow the car.
-  thirdPersonCamera.Update(car.car)
+  // thirdPersonCamera.Update(car.car)
 }
 //#endregion
 
