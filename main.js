@@ -24,14 +24,14 @@ constructor(curve){
   this.curve = curve;
 }
   CreateRoad(){
-    const points = this.curve.getPoints(50);
+    const points = this.curve.getPoints(80);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     
-    const linematerial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    const linematerial = new THREE.LineBasicMaterial({ color: 0xffffff });
     
     //Draw a line from the created road
-    const curveObject = new THREE.Line(geometry, linematerial);
-    scene.add(curveObject);
+    const curveLine = new THREE.Line(geometry, linematerial);
+    scene.add(curveLine);
     
     //Settings for the road
     var extrudeSettings = {
@@ -47,12 +47,12 @@ constructor(curve){
     shape.lineTo(0,-5);
     shape.lineTo(0, 5);
     
-    // Extrude the triangle along the CatmullRom curve
-    var geometry2 = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    var material2 = new THREE.MeshLambertMaterial({ color: 0xb00000, wireframe: false });
+    // Extrude the path along the CatmullRom curve
+    var pathGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    var pathMaterial = new THREE.MeshLambertMaterial({ color: 0x46494d, wireframe: false });
     
     // Create mesh with the resulting geometry
-    var mesh = new THREE.Mesh(geometry2, material2);
+    var mesh = new THREE.Mesh(pathGeometry, pathMaterial);
     
     //Add road
     scene.add(mesh);
@@ -74,7 +74,10 @@ MoveCarOnRoad(curveRoad){
   progress = progress % 1;
 
   car.carPosition.copy(curveRoad.getPointAt(progress));
-  car.carPosition.y += 0.3;
+  //Offset for car height
+  car.carPosition.y += 0.7;
+  //Offset for the side of the road
+  car.carPosition.x += -3;
 
   car.car.position.copy(car.carPosition);
 
@@ -82,14 +85,16 @@ MoveCarOnRoad(curveRoad){
 
   velocity -= tangent.y * 0.0000001 * delta;
   velocity = Math.max(0.0005, Math.min(0.0002, velocity));
+  //Turn model in direction of the path
   car.car.lookAt(lookAt.copy(car.carPosition).sub(tangent));
 }
   
 }
 
-
+//#region INIT
 const scene = new THREE.Scene();
 
+//Make camera with windows aspect ratio
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 var thirdPersonCamera = new ThirdPersonCamera();
@@ -101,6 +106,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 
 renderer.setPixelRatio(window.devicePixelRatio);
+//Match window size.
 renderer.setSize(window.innerWidth, window.innerHeight);
 camera.position.setZ(40);
 camera.position.setY(20);
@@ -108,8 +114,7 @@ camera.position.setY(20);
 
 renderer.render(scene, camera);
 
-
-
+//#endregion
 
 // Geometry
 
@@ -120,17 +125,14 @@ GroundPlane.position.setY(-0.1);
 GroundPlane.rotation.x = Math.PI * -.5;
 
 //Car 
-let carGeometry = new THREE.BoxGeometry(2, 2);
-let carMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 })
-let carMesh = new THREE.Mesh(carGeometry, carMaterial);
-
-// modelLoader.load('car.glb', function(gltf){
-//   carMesh = gltf.scene;
-//   scene.add(gltf.scene);
-// })
+//Declare object outside, else we cant use car object later
+var car;
+// let carMesh;
+modelLoader.load('car.glb', function(gltf){
+  car = new Car(gltf.scene); 
+})
 
 
-const car = new Car(carMesh); 
 
 // scene.add(GroundPlane);
 const carPosition = new THREE.Vector3();
@@ -207,7 +209,7 @@ function animate() {
   renderer.render(scene, camera);
 
   //Make the camera follow the car.
-  // thirdPersonCamera.Update(car.car)
+  thirdPersonCamera.Update(car.car)
 }
 //#endregion
 
