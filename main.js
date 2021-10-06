@@ -1,4 +1,4 @@
-import './style.css';
+import '/style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Vector3 } from 'three';
@@ -44,7 +44,7 @@ class Road {
         vector = new THREE.Vector3(THREE.Math.randFloat(5, 20), 0, i * roadLength);
         vectorArray.push(vector);
 
-        sign.position.set(vector.x - 15 ,0,vector.z);
+        sign.position.set(vector.x - 10 ,0,vector.z);
 
         isLeft = true;
       }
@@ -52,7 +52,7 @@ class Road {
         vector = new THREE.Vector3(THREE.Math.randFloat(-5, -20), 0, i * roadLength);
         vectorArray.push(vector);
 
-        sign.position.set(vector.x + 15,0,vector.z);
+        sign.position.set(vector.x + 10,0,vector.z);
 
         isLeft = false;
       }
@@ -125,8 +125,8 @@ class Road {
     sign.add(SignPlaneBack);
 
     //Add some pillars that hold the sign.
-    let pillar1 = this.CreatePillar(height + SignPlane.geometry.parameters.height/2);
-    let pillar2 = this.CreatePillar(height + SignPlane.geometry.parameters.height/2);
+    let pillar1 = this.CreatePillar(height - SignPlane.geometry.parameters.height/2);
+    let pillar2 = this.CreatePillar(height - SignPlane.geometry.parameters.height/2);
 
     //Calculate the position of the pillars for compatability with different sizes.
     let pillarOffset = 2;
@@ -149,6 +149,7 @@ class Road {
     let pillarGeometry = new THREE.CylinderGeometry(.2, .2, height, 32);
     let pillarMaterial = new THREE.MeshPhongMaterial({ color: 0x4d5157 });
     let pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+    pillar.position.y = height/2;
     return pillar;
   }
   CreateFrame(plane){
@@ -220,18 +221,6 @@ class Car {
 
 }
 
-class ImageSign {
-  constructor(imageLocation) {
-    const imageLoader = new THREE.ImageLoader();
-    imageLoader.load(imageLocation, function (image) {
-      const canvas = document.createElement
-    })
-  }
-
-
-
-}
-
 //#region INIT
 const scene = new THREE.Scene();
 
@@ -261,6 +250,7 @@ camera.position.setY(20);
 
 // Geometry
 
+//The ground
 const planeGeometry = new THREE.PlaneGeometry(100, 300);
 const material = new THREE.MeshPhongMaterial({ color: 0xff6347 });
 const GroundPlane = new THREE.Mesh(planeGeometry, material);
@@ -303,19 +293,6 @@ camera.rotation.x = -0.7;
 
 
 //#region  ROAD
-
-
-//Create the vectors (points) for the curved road
-// const curve = new THREE.CatmullRomCurve3([
-//   new THREE.Vector3(0, 0, 0),
-//   new THREE.Vector3(10, 0, 20),
-//   new THREE.Vector3(-10, 0, 40),
-//   new THREE.Vector3(10, 0, 60),
-//   new THREE.Vector3(-10, 0, 80),
-//   new THREE.Vector3(10, 0, 100)
-// ]);
-// curve.type = 'chordal';
-// curve.closed = false;
 
 //Create a road from the curve
 let testArray = ['TeleTavleHelper.png','TeleTavleHelper.png','TeleTavleHelper.png','TeleTavleHelper.png','TeleTavleHelper.png','TeleTavleHelper.png']
