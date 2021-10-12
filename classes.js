@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class ThirdPersonCamera {
   constructor(camera) {
@@ -20,8 +21,10 @@ export class ThirdPersonCamera {
     constructor(imageArray, scene) {
       this.curve;
       this.scene = scene;
+      this.modelLoader = new GLTFLoader();
       this.CreateRoad(imageArray);
       this.DrawRoad();
+      this.GenerateTrees(scene, 60);
     }
   
     CreateRoad(imageArray){
@@ -195,6 +198,42 @@ export class ThirdPersonCamera {
       let frameMaterial = new THREE.MeshPhongMaterial({ color: 0x4d5157 });
       let frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
       return frameMesh;
+    }
+
+    GenerateTree(scene, position){
+      let number = THREE.Math.randInt(1,2);
+      this.modelLoader.load('Objects/Tree'+number+'.glb', function (gltf) {
+        //Set the position the the tunnel
+        let tr = gltf.scene;
+        tr.position.set(position.x, position.y, position.z);
+        tr.castShadow = true;
+        tr.receiveShadow = true;
+
+        scene.add(tr);
+      });
+    }
+    GenerateTrees(scene, amountTrees){
+      //TODO: Make better generation
+      //Make a list with all the tree positions
+      let trees = []
+      //Make the requested amount of trees.
+      for (let i = 0; i < amountTrees; i++) {
+        //Make a random vector
+        let x = 0;
+        
+        //make sure the number is not the highway. Should be remade sometime
+        while(x < 20 && x > -20){
+          x = THREE.Math.randInt(-100,100);
+        }
+        let vector = new THREE.Vector3(x,0,THREE.Math.randInt(0,250));
+
+        //If there is a tree on the location, dont add it.
+        if (trees.includes(vector) == false) {
+          this.GenerateTree(scene,vector);
+          trees.push(vector);
+        }
+        
+      }
     }
   
   }

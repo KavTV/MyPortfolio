@@ -15,7 +15,7 @@ import {Road, ThirdPersonCamera, Car} from './classes.js';
 const scene = new THREE.Scene();
 
 //Make camera with windows aspect ratio
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 var thirdPersonCamera = new ThirdPersonCamera(camera);
 
@@ -65,7 +65,7 @@ GroundPlane.rotation.x = Math.PI * -.5;
 //Declare object outside, else we cant use car object later
 var car;
 // let carMesh;
-modelLoader.load('car.glb', function (gltf) {
+modelLoader.load('Objects/car.glb', function (gltf) {
   //Make all objects cast shadow
   gltf.scene.traverse( function( node ) {
 
@@ -74,9 +74,6 @@ modelLoader.load('car.glb', function (gltf) {
 } );
   car = new Car(gltf.scene, scene);
 });
-
-
-
 
 
 scene.add(GroundPlane);
@@ -102,7 +99,7 @@ scene.add( spotLight, ambientLight);
 // const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(lightHelper)
 
-// const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
 camera.rotation.x = -0.7;
 
 
@@ -115,7 +112,7 @@ var road = new Road(testArray, scene);
 //#endregion
 
 var tunnel;
-modelLoader.load('tunnel.glb', function (gltf) {
+modelLoader.load('Objects/tunnel.glb', function (gltf) {
   //Set the position the the tunnel
   tunnel = gltf.scene
   tunnel.position.set(0,4,0);
@@ -148,10 +145,10 @@ function moveOnScroll() {
 function animate() {
   requestAnimationFrame(animate);
 
-  //Move the car on road
+  //Move the car on road & make sure both objects are loaded in.
   if (car && thirdPersonCamera) {
     car.MoveCarOnRoad(road.curve);
-    thirdPersonCamera.Update(car.car)
+    // thirdPersonCamera.Update(car.car)
   }
 
   renderer.render(scene, camera);
