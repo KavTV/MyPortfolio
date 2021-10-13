@@ -9,8 +9,6 @@ import {Road, ThirdPersonCamera, Car} from './classes.js';
 
 
 
-
-
 //#region INIT
 const scene = new THREE.Scene();
 
@@ -111,21 +109,43 @@ var road = new Road(testArray, scene);
 
 //#endregion
 
+//TODO: Should make a script with the enviroment placement and generation.
 var tunnel;
+let tunnelRotation = road.curve.getTangentAt(.003);
 modelLoader.load('Objects/tunnel.glb', function (gltf) {
   //Set the position the the tunnel
   tunnel = gltf.scene
   tunnel.position.set(0,4,0);
-  let tunnelRotation = road.curve.getTangentAt(.003);
+  
   //Make sure the tunnel just faces the direction, not the y position, which makes it point down.
   tunnelRotation.y = tunnel.position.y;
   tunnel.lookAt(tunnelRotation);
 
-  tunnel.castShadow = true;
-  tunnel.receiveShadow = true;
+  //Enable shadows for object
+  gltf.scene.traverse( function( node ) {
+
+    if ( node.isMesh ) { node.castShadow = true; }
+
+} );
 
   scene.add(tunnel);
 });
+
+//This is the wall behind the tunnel, and the connector between tunnel and wall.
+let wallGeometry = new THREE.BoxGeometry(planeGeometry.parameters.width,250,2);
+let tunnelConnectorGeometry = new THREE.BoxGeometry(20,40,15);
+let wallMaterial = new THREE.MeshBasicMaterial({color: 0x686f78});
+let wallMesh = new THREE.Mesh(wallGeometry,wallMaterial);
+let tunnelConnector = new THREE.Mesh(tunnelConnectorGeometry, wallMaterial);
+
+wallMesh.position.z = -8;
+
+tunnelConnector.lookAt(tunnelRotation);
+tunnelConnector.position.z -= 7;
+tunnelConnector.position.x -= 3;
+
+scene.add(wallMesh, tunnelConnector);
+
 
 //#region   ---EVENTS---
 document.body.onscroll = moveOnScroll;
